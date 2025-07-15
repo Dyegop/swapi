@@ -9,6 +9,8 @@ from src.core import get_resource_config
 
 router = APIRouter()
 
+resource_config = get_resource_config()
+
 
 class PersonSortingField(StrEnum):
     """Describes fields that are allowed for sorting a Person entity."""
@@ -35,8 +37,6 @@ async def list_people(
         search: Partial name to filter results by. Case-insensitive.
         sort_by: Sort the results by the given field.
     """
-
-    resource_config = get_resource_config()
 
     people: list[Person] = await list_items(
         Person,

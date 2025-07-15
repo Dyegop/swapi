@@ -9,6 +9,8 @@ from src.core import get_resource_config
 
 router = APIRouter()
 
+resource_config = get_resource_config()
+
 
 class PlanetSortingField(StrEnum):
     """Describes fields that are allowed for sorting a Planet entity."""
@@ -38,8 +40,6 @@ async def list_planets(
         search: Partial name to filter results by. Case-insensitive.
         sort_by: Sort the results by the given field.
     """
-
-    resource_config = get_resource_config()
 
     planets: list[Planet] = await list_items(
         Planet,

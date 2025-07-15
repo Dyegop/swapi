@@ -1,19 +1,19 @@
 import asyncio
 import re
-from typing import Coroutine, Final, Type, TypeVar
+from typing import Coroutine, Type, TypeVar
 
 import httpx
 import pydantic
 
 from src.app.models import Person, Planet
-from src.core.logger import get_logger
-
-DEFAULT_PAGE_SIZE: Final[int] = 10
-"""Default items to return by page."""
+from src.core import get_config, get_logger, get_resource_config
 
 SwapiModel = TypeVar("SwapiModel", Person, Planet)
 
-logger = get_logger(__name__)
+config = get_config()
+resource_config = get_resource_config()
+
+logger = get_logger(config.app_name)
 
 
 async def _get_item(model: Type[SwapiModel], client: httpx.AsyncClient, endpoint: str) -> SwapiModel | None:
@@ -56,8 +56,8 @@ async def list_items(
         sort_by: Sort items by the given field.
     """
 
-    start_id = (page - 1) * DEFAULT_PAGE_SIZE + 1
-    end_id = start_id + DEFAULT_PAGE_SIZE
+    start_id = (page - 1) * resource_config.default_page_size + 1
+    end_id = start_id + resource_config.default_page_size
 
     async with httpx.AsyncClient() as client:
         tasks: list[Coroutine] = []
