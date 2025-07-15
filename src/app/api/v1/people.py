@@ -1,12 +1,11 @@
-import asyncio
 from enum import StrEnum
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
 
 from src.app.api.dependencies import list_items
-from src.app.core import get_resource_config
 from src.app.models import Person
+from src.core import get_resource_config
 
 router = APIRouter()
 
@@ -48,12 +47,3 @@ async def list_people(
     )
 
     return people
-
-
-async def main():
-    result = await list_people(page=1, search="", sort_by=PersonSortingField.NAME)
-    for item in result:
-        print(item.name)
-
-
-asyncio.run(main())

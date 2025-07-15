@@ -1,3 +1,4 @@
+import logging
 import re
 from typing import Final, Type, TypeVar
 
@@ -11,6 +12,8 @@ DEFAULT_PAGE_SIZE: Final[int] = 10
 """Default items to return by page."""
 
 SwapiModel = TypeVar("SwapiModel", Person, Planet)
+
+logger = logging.getLogger(__name__)
 
 
 def _filter_by_name(items: list[SwapiModel], name: str) -> list[SwapiModel]:
@@ -43,7 +46,7 @@ async def list_items(
     Raises:
         HTTPException: If a request fails unexpectedly or the external service is unavailable.
     """
-    # TODO:2025-07-14:diego: Add logger
+
     items: list[SwapiModel] = []
 
     start_id = (page - 1) * DEFAULT_PAGE_SIZE + 1
@@ -51,27 +54,29 @@ async def list_items(
 
     async with httpx.AsyncClient() as client:
         for item_id in range(start_id, end_id):
-            url = f"{base_url}/{item_id}"
+            endpoint = f"{base_url}/{item_id}"
             try:
-                response: httpx.Response = await client.get(url)
+                response: httpx.Response = await client.get(endpoint)
             except httpx.RequestError as e:
-                raise HTTPException(status_code=503, detail="Unexpected error ocurred when executing request") from e
+                err_msg = "Unexpected error ocurred when executing request"
+                logger.error(f"{err_msg}: {repr(e)}")
+                raise HTTPException(status_code=503, detail=err_msg) from e
 
             if response.is_success:
                 items.append(model(**response.json()))
             else:
-                if response.status_code == "404":
-                    # TODO:2025-07-15:diego: Add logger
-                    # End of pagination
+                if response.status_code == "404":  # End of pagination
+                    logger.error(f"No item found for {endpoint=}")
                     break
                 else:
-                    # TODO:2025-07-14:diego: Add error message
-                    ...
+                    logger.error(f"Error retrieving item from {endpoint=} - status_code={response.status_code}")
 
     if search:
+        logger.info(f"Searching items where name field includes `{search}`")
         items: list[SwapiModel] = _filter_by_name(items=items, name=search)
 
     if sort_by:
+        logger.info(f"Sorting items by field `{sort_by}`")
         items: list[SwapiModel] = sorted(items, key=lambda item: getattr(item, sort_by))
 
     return items

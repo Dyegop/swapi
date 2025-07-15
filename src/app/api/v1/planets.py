@@ -1,12 +1,11 @@
-import asyncio
 from enum import StrEnum
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
 
 from src.app.api.dependencies import list_items
-from src.app.core import get_resource_config
 from src.app.models import Planet
+from src.core import get_resource_config
 
 router = APIRouter()
 
@@ -51,11 +50,3 @@ async def list_planets(
     )
 
     return planets
-
-
-async def main():
-    result = await list_planets(page=40)
-    print(result)
-
-
-asyncio.run(main())
