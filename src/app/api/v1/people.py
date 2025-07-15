@@ -40,7 +40,7 @@ async def list_people(
 
     people: list[Person] = await list_items(
         Person,
-        base_url=resource_config.swapi_people_url,
+        url=resource_config.people_url,
         page=page,
         search=search,
         sort_by=sort_by,

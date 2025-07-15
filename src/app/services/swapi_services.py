@@ -40,7 +40,7 @@ def _filter_by_name(items: list[SwapiModel], name: str) -> list[SwapiModel]:
 async def list_items(
     model: Type[SwapiModel],
     *,
-    base_url: pydantic.HttpUrl,
+    url: pydantic.HttpUrl,
     page: int,
     search: str | None = None,
     sort_by: str | None = None,
@@ -50,7 +50,7 @@ async def list_items(
 
     Args:
         model: The Pydantic model to seralize retrieved resources.
-        base_url: The base URL of the SWAPI resource.
+        url: The URL of the SWAPI resource.
         page: The page number to fetch. Each page includes DEFAULT_PAGE_SIZE items.
         search: Substring to filter items by their `name` field. Case-insensitive.
         sort_by: Sort items by the given field.
@@ -63,7 +63,7 @@ async def list_items(
         tasks: list[Coroutine] = []
 
         for item_id in range(start_id, end_id):
-            endpoint = f"{base_url}/{item_id}"
+            endpoint = f"{url}/{item_id}"
             tasks.append(_get_item(model=model, client=client, endpoint=endpoint))
 
         items: list[SwapiModel] = await asyncio.gather(*tasks)

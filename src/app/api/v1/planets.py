@@ -43,7 +43,7 @@ async def list_planets(
 
     planets: list[Planet] = await list_items(
         Planet,
-        base_url=resource_config.swapi_planets_url,
+        url=resource_config.planets_url,
         page=page,
         search=search,
         sort_by=sort_by,
