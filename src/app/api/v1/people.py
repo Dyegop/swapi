@@ -5,7 +5,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Query
 
 from src.app.api.dependencies import list_items
-from src.app.core import swapi_config
+from src.app.core import get_resource_config
 from src.app.models import Person
 
 router = APIRouter()
@@ -37,9 +37,11 @@ async def list_people(
         sort_by: Sort the results by the given field.
     """
 
+    resource_config = get_resource_config()
+
     people: list[Person] = await list_items(
         Person,
-        base_url=swapi_config.swapi_people_url,
+        base_url=resource_config.swapi_people_url,
         page=page,
         search=search,
         sort_by=sort_by,
