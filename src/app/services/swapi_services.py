@@ -34,7 +34,7 @@ async def list_items(
     Retrieves a list of SWAPI resources.
 
     Args:
-        model: The Pydantic model to seralize each resource to.
+        model: The Pydantic model to seralize retrieved resources.
         base_url: The base URL of the SWAPI resource.
         page: The page number to fetch. Each page includes DEFAULT_PAGE_SIZE items.
         search: Substring to filter items by their `name` field. Case-insensitive.

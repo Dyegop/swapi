@@ -3,8 +3,8 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
 
-from src.app.api.dependencies import list_items
 from src.app.models import Planet
+from src.app.services import list_items
 from src.core import get_resource_config
 
 router = APIRouter()
