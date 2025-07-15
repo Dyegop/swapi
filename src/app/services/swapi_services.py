@@ -1,9 +1,9 @@
+import asyncio
 import re
-from typing import Final, Type, TypeVar
+from typing import Coroutine, Final, Type, TypeVar
 
 import httpx
 import pydantic
-from fastapi import HTTPException
 
 from src.app.models import Person, Planet
 from src.core.logger import get_logger
@@ -16,8 +16,23 @@ SwapiModel = TypeVar("SwapiModel", Person, Planet)
 logger = get_logger(__name__)
 
 
+async def _get_item(model: Type[SwapiModel], client: httpx.AsyncClient, endpoint: str) -> SwapiModel | None:
+    """Retrieves an item from the specific endpoint and parse the result to the given model."""
+    try:
+        response: httpx.Response = await client.get(endpoint)
+        if response.is_success:
+            return model(**response.json())
+        else:
+            logger.error(f"Error retrieving item from {endpoint=} with status_code={response.status_code}.")
+    except httpx.RequestError as e:
+        logger.error(f"Unexpected error ocurred when executing request: {repr(e)}.")
+    except pydantic.ValidationError as e:
+        logger.error(f"Failed to parse response into {model.__name__} due to error: {repr(e)}.")
+    return None
+
+
 def _filter_by_name(items: list[SwapiModel], name: str) -> list[SwapiModel]:
-    """Filter a given list of type `Model` by the given case-insensitive name field."""
+    """Filter a list of items by the given case-insensitive name field."""
     pattern = re.compile(re.escape(name), re.IGNORECASE)
     return [item for item in items if pattern.search(item.name)]
 
@@ -39,40 +54,24 @@ async def list_items(
         page: The page number to fetch. Each page includes DEFAULT_PAGE_SIZE items.
         search: Substring to filter items by their `name` field. Case-insensitive.
         sort_by: Sort items by the given field.
-
-    Returns:
-        list[SwapiModel]: A list of model instances representing the fetched and processed resources.
-
-    Raises:
-        HTTPException: If a request fails unexpectedly or the external service is unavailable.
     """
-
-    items: list[SwapiModel] = []
 
     start_id = (page - 1) * DEFAULT_PAGE_SIZE + 1
     end_id = start_id + DEFAULT_PAGE_SIZE
 
     async with httpx.AsyncClient() as client:
+        tasks: list[Coroutine] = []
+
         for item_id in range(start_id, end_id):
             endpoint = f"{base_url}/{item_id}"
-            try:
-                response: httpx.Response = await client.get(endpoint)
-            except httpx.RequestError as e:
-                err_msg = "Unexpected error ocurred when executing request"
-                logger.error(f"{err_msg}: {repr(e)}")
-                raise HTTPException(status_code=503, detail=err_msg) from e
+            tasks.append(_get_item(model=model, client=client, endpoint=endpoint))
 
-            if response.is_success:
-                items.append(model(**response.json()))
-            else:
-                logger.error(f"Error retrieving item from {endpoint=} - status_code={response.status_code}")
+        items: list[SwapiModel] = await asyncio.gather(*tasks)
 
+    items = [item for item in items if item is not None]
     if search:
         items: list[SwapiModel] = _filter_by_name(items=items, name=search)
-        logger.info(f"Items filtered where the name includes `{search}`")
-
     if sort_by:
         items: list[SwapiModel] = sorted(items, key=lambda item: getattr(item, sort_by))
-        logger.info(f"Items sorted by field `{sort_by}`")
 
     return items
