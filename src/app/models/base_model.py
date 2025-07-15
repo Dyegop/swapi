@@ -1,12 +1,8 @@
 import datetime
-from typing import TypeVar
 
 import pydantic
 
 model_field = pydantic.Field
-
-Model = TypeVar("Model", bound="BaseModel")
-"""A Pydantic-based model."""
 
 
 class WithTimestamps(pydantic.BaseModel):

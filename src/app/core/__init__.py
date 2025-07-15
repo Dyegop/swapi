@@ -1,1 +1,1 @@
-from src.app.core.config import Config
+from src.app.core.config import swapi_config

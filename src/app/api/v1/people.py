@@ -38,7 +38,11 @@ async def list_people(
     """
 
     people: list[Person] = await list_items(
-        Person, base_url=swapi_config.swapi_people_url, page=page, search=search, sort_by=sort_by
+        Person,
+        base_url=swapi_config.swapi_people_url,
+        page=page,
+        search=search,
+        sort_by=sort_by,
     )
 
     return people
