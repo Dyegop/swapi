@@ -4,7 +4,7 @@ import pydantic
 import pydantic_settings
 
 
-class BaseConfig(pydantic_settings.BaseSettings):
+class AppConfig(pydantic_settings.BaseSettings):
     """Describes app configuration."""
 
     app_name: str = "swapi"
@@ -24,13 +24,26 @@ class ResourceConfig(pydantic_settings.BaseSettings):
     """Default items to return by page."""
 
 
+class CLIConfig(pydantic_settings.BaseSettings):
+    """Describes SWAPI CLI configuration."""
+
+    people_table_title: str = "People"
+    planets_table_title: str = "Planets"
+
+
 @lru_cache()
-def get_config() -> BaseConfig:
-    """Returns an instance of BaseConfig."""
-    return BaseConfig()
+def get_app_config() -> AppConfig:
+    """Returns a cached instance of the app configuration."""
+    return AppConfig()
 
 
 @lru_cache()
 def get_resource_config() -> ResourceConfig:
-    """Returns an instance of ResourceConfig."""
+    """Returns a cached instance of the resource configuration."""
     return ResourceConfig()
+
+
+@lru_cache()
+def get_cli_config() -> CLIConfig:
+    """Returns a cached instance of the CLI app configuration."""
+    return CLIConfig()

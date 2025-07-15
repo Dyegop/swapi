@@ -6,14 +6,14 @@ import httpx
 import pydantic
 
 from src.app.models import Person, Planet
-from src.core import get_config, get_logger, get_resource_config
+from src.core import get_app_config, get_logger, get_resource_config
 
 SwapiModel = TypeVar("SwapiModel", Person, Planet)
 
-config = get_config()
+app_config = get_app_config()
 resource_config = get_resource_config()
 
-logger = get_logger(config.app_name)
+logger = get_logger(app_config.app_name)
 
 
 async def _get_item(model: Type[SwapiModel], client: httpx.AsyncClient, endpoint: str) -> SwapiModel | None:
