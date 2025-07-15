@@ -1,4 +1,3 @@
-import logging
 import re
 from typing import Final, Type, TypeVar
 
@@ -7,13 +6,14 @@ import pydantic
 from fastapi import HTTPException
 
 from src.app.models import Person, Planet
+from src.core.logger import get_logger
 
 DEFAULT_PAGE_SIZE: Final[int] = 10
 """Default items to return by page."""
 
 SwapiModel = TypeVar("SwapiModel", Person, Planet)
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def _filter_by_name(items: list[SwapiModel], name: str) -> list[SwapiModel]:
@@ -65,18 +65,14 @@ async def list_items(
             if response.is_success:
                 items.append(model(**response.json()))
             else:
-                if response.status_code == "404":  # End of pagination
-                    logger.error(f"No item found for {endpoint=}")
-                    break
-                else:
-                    logger.error(f"Error retrieving item from {endpoint=} - status_code={response.status_code}")
+                logger.error(f"Error retrieving item from {endpoint=} - status_code={response.status_code}")
 
     if search:
-        logger.info(f"Searching items where name field includes `{search}`")
         items: list[SwapiModel] = _filter_by_name(items=items, name=search)
+        logger.info(f"Items filtered where the name includes `{search}`")
 
     if sort_by:
-        logger.info(f"Sorting items by field `{sort_by}`")
         items: list[SwapiModel] = sorted(items, key=lambda item: getattr(item, sort_by))
+        logger.info(f"Items sorted by field `{sort_by}`")
 
     return items
