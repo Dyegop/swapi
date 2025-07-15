@@ -8,7 +8,7 @@ class AppConfig(pydantic_settings.BaseSettings):
     """Describes app configuration."""
 
     app_name: str = "swapi"
-    app_host: str = "https://127.0.0.1"
+    app_host: str = "127.0.0.1"
     app_port: int = 8000
     reload: bool = False
 
