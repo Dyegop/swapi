@@ -1,5 +1,5 @@
 from json import JSONDecodeError
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 import httpx
 import typer
@@ -13,7 +13,7 @@ resource_config = get_resource_config()
 app = typer.Typer()
 
 
-def _get_items(url: str, page: int, search: str | None = None, sort_by: str | None = None) -> list[dict[str, Any]]:
+def _get_items(url: str, page: int, search: str | None, sort_by: str | None, order: str | None) -> list[dict[str, Any]]:
     """
     Fetches a list of items from the given url. If no items are found or an error occurs, returns an empty list.
 
@@ -21,6 +21,7 @@ def _get_items(url: str, page: int, search: str | None = None, sort_by: str | No
         page: Page number to fetch. Each page returns a fixed number of people.
         search: Optional search query to filter people by name (case-insensitive).
         sort_by: Optional field to sort the retrieved.
+        order: Optional item order 'asc' or 'desc'. Defaults to 'asc'.
     """
     params: dict[str, Any] = {"page": page}
     if search:
@@ -42,6 +43,11 @@ def _get_items(url: str, page: int, search: str | None = None, sort_by: str | No
     except JSONDecodeError as e:
         console.print(f"[bold red]Error decoding JSON from response:[/bold red] {repr(e)}")
 
+    # If sort_by, backend returns items in asc order by default
+    # Base on requirements, order must be set in CLI app, not backend
+    if items and sort_by and order == "desc":
+        items.reverse()
+
     return items
 
 
@@ -51,6 +57,10 @@ def list_people(
     page: Annotated[int, typer.Option(help="Page number. Each page returns 10 items.")] = 1,
     search: Annotated[str | None, typer.Option(help="Partial name to filter results by. Case-insensitive.")] = None,
     sort_by: Annotated[str | None, typer.Option(help="Sort the results by the given field.")] = None,
+    order: Annotated[
+        Literal["asc", "desc"] | None,
+        typer.Option(help="Items order if sort_by: 'asc' for ascending, 'desc' for descending. Defaults to 'asc'"),
+    ] = None,
 ) -> None:
     """CLI command that fetches people from the SWAPI API and displays the result as a table."""
     items: list[dict[str, Any]] = _get_items(
@@ -58,6 +68,7 @@ def list_people(
         page=page,
         search=search,
         sort_by=sort_by,
+        order=order,
     )
     display_table(items=items)
 
@@ -68,6 +79,10 @@ def list_planets(
     page: Annotated[int, typer.Option(help="Page number. Each page returns 10 items.")] = 1,
     search: Annotated[str | None, typer.Option(help="Partial name to filter results by. Case-insensitive.")] = None,
     sort_by: Annotated[str | None, typer.Option(help="Sort the results by the given field.")] = None,
+    order: Annotated[
+        Literal["asc", "desc"] | None,
+        typer.Option(help="Items order if sort_by: 'asc' for ascending, 'desc' for descending. Defaults to 'asc'"),
+    ] = None,
 ) -> None:
     """CLI command that fetches planets from the SWAPI API and displays the result as a table."""
     items: list[dict[str, Any]] = _get_items(
@@ -75,6 +90,7 @@ def list_planets(
         page=page,
         search=search,
         sort_by=sort_by,
+        order=order,
     )
     display_table(items=items)
 
