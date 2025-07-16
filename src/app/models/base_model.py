@@ -8,7 +8,10 @@ model_field = pydantic.Field
 class WithTimestamps(pydantic.BaseModel):
     """Describes a base model with timestamps."""
 
-    created: datetime.datetime = model_field(title="Created", description="The resource creation datetime.")
+    created: datetime.datetime = model_field(
+        title="Created",
+        description="The resource creation datetime.",
+    )
 
     edited: datetime.datetime = model_field(
         title="Edited",
@@ -19,4 +22,7 @@ class WithTimestamps(pydantic.BaseModel):
 class WithUrl(pydantic.BaseModel):
     """Describes a base model with resource url."""
 
-    url: pydantic.HttpUrl = model_field(title="Url", description="The resource url.")
+    url: pydantic.HttpUrl = model_field(
+        title="Url",
+        description="The resource url.",
+    )
