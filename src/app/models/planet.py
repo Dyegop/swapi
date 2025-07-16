@@ -4,7 +4,7 @@ from src.app.models.base_model import WithTimestamps, WithUrl, model_field
 
 
 class Planet(WithTimestamps, WithUrl):
-    """Describes a Planet entity."""
+    """Describes a SWAPI Planet entity."""
 
     name: str = model_field(
         title="Name",

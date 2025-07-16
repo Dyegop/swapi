@@ -4,7 +4,7 @@ from src.app.models.base_model import WithTimestamps, WithUrl, model_field
 
 
 class Person(WithUrl, WithTimestamps):
-    """Describes a Person entity."""
+    """Describes a SWAPI Person entity."""
 
     name: str = model_field(
         title="Name",
