@@ -22,7 +22,7 @@ class ResourceConfig(pydantic_settings.BaseSettings):
 
     people_resource: str = "people"
     planets_resource: str = "planets"
-    base_url: str = "https://swapi.info/api"
+    base_url: str = "https://swapi.info/api/"
     people_endpoint: str = urljoin(base_url, people_resource)
     planets_endpoint: str = urljoin(base_url, planets_resource)
 
