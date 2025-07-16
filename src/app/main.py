@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from src.app.api.v1 import people_router, planets_router
+from src.app.api import people_router, planets_router
 from src.core import get_app_config, get_resource_config
 
 app = FastAPI(title="SWAPI", version="0.1.0")
@@ -9,8 +9,8 @@ app = FastAPI(title="SWAPI", version="0.1.0")
 app_config = get_app_config()
 resource_config = get_resource_config()
 
-app.include_router(people_router, prefix="/people", tags=[resource_config.people_resource])
-app.include_router(planets_router, prefix="/planets", tags=[resource_config.planets_resource])
+app.include_router(people_router, prefix=app_config.people_path, tags=[resource_config.people_resource])
+app.include_router(planets_router, prefix=app_config.planets_path, tags=[resource_config.planets_resource])
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
 from functools import lru_cache
-from urllib.parse import urljoin
 
 import pydantic_settings
 
@@ -11,10 +10,20 @@ class AppConfig(pydantic_settings.BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8000
     reload: bool = False
+    people_path: str = "/people"
+    planets_path: str = "/planets"
 
     @property
     def url(self) -> str:
         return f"http://{self.host}:{self.port}"
+
+    @property
+    def people_url(self) -> str:
+        return f"http://{self.host}:{self.port}{self.people_path}/"
+
+    @property
+    def planets_url(self) -> str:
+        return f"http://{self.host}:{self.port}{self.planets_path}/"
 
 
 class ResourceConfig(pydantic_settings.BaseSettings):
@@ -23,8 +32,8 @@ class ResourceConfig(pydantic_settings.BaseSettings):
     people_resource: str = "people"
     planets_resource: str = "planets"
     base_url: str = "https://swapi.info/api/"
-    people_endpoint: str = urljoin(base_url, people_resource)
-    planets_endpoint: str = urljoin(base_url, planets_resource)
+    people_endpoint: str = f"{base_url}/{people_resource}"
+    planets_endpoint: str = f"{base_url}/{planets_resource}"
 
     default_page_size: int = 10
     """Default items to return by page."""
