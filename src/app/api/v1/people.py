@@ -23,7 +23,7 @@ class PersonSortingField(StrEnum):
     EDITED = "edited"
 
 
-@router.get("/", response_model=list[Person], tags=["people"])
+@router.get("/", response_model=list[Person], tags=[resource_config.people_resource])
 async def list_people(
     page: Annotated[int, Query(ge=1)] = 1,
     search: str | None = None,
@@ -40,7 +40,7 @@ async def list_people(
 
     people: list[Person] = await list_items(
         Person,
-        url=resource_config.people_url,
+        url=resource_config.people_endpoint,
         page=page,
         search=search,
         sort_by=sort_by,

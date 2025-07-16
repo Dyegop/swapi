@@ -26,7 +26,7 @@ class PlanetSortingField(StrEnum):
     EDITED = "edited"
 
 
-@router.get("/", response_model=list[Planet], tags=["people"])
+@router.get("/", response_model=list[Planet], tags=[resource_config.planets_resource])
 async def list_planets(
     page: Annotated[int, Query(ge=1)] = 1,
     search: str | None = None,
@@ -43,7 +43,7 @@ async def list_planets(
 
     planets: list[Planet] = await list_items(
         Planet,
-        url=resource_config.planets_url,
+        url=resource_config.planets_endpoint,
         page=page,
         search=search,
         sort_by=sort_by,

@@ -13,7 +13,7 @@ SwapiModel = TypeVar("SwapiModel", Person, Planet)
 app_config = get_app_config()
 resource_config = get_resource_config()
 
-logger = get_logger(app_config.app_name)
+logger = get_logger(app_config.name)
 
 
 async def _get_item(model: Type[SwapiModel], client: httpx.AsyncClient, endpoint: str) -> SwapiModel | None:
@@ -40,7 +40,7 @@ def _filter_by_name(items: list[SwapiModel], name: str) -> list[SwapiModel]:
 async def list_items(
     model: Type[SwapiModel],
     *,
-    url: pydantic.HttpUrl,
+    url: str,
     page: int,
     search: str | None = None,
     sort_by: str | None = None,
