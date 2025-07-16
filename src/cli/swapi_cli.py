@@ -13,9 +13,14 @@ resource_config = get_resource_config()
 app = typer.Typer()
 
 
-def _list_items(url: str, page: int, search: str | None = None, sort_by: str | None = None) -> None:
-    """Retrieves a list of items from the given url and page with optional search and sort parameters, and displays
-    them in a table.
+def _get_items(url: str, page: int, search: str | None = None, sort_by: str | None = None) -> list[dict[str, Any]]:
+    """
+    Fetches a list of items from the given url. If no items are found or an error occurs, returns an empty list.
+
+    Args:
+        page: Page number to fetch. Each page returns a fixed number of people.
+        search: Optional search query to filter people by name (case-insensitive).
+        sort_by: Optional field to sort the retrieved.
     """
     params: dict[str, Any] = {"page": page}
     if search:
@@ -23,10 +28,11 @@ def _list_items(url: str, page: int, search: str | None = None, sort_by: str | N
     if sort_by:
         params["sort_by"] = sort_by
 
+    items: list[dict[str, Any]] = []
+
     try:
         response: httpx.Response = httpx.get(url=url, params=params)
-        items: list[dict[str, Any]] = response.json()
-        display_table(items=items)
+        items.extend(response.json())
     except httpx.RequestError as e:
         console.print(f"[bold red]Error requesting data from {url=}:[/bold red] {repr(e)}")
     except httpx.HTTPStatusError as e:
@@ -36,6 +42,8 @@ def _list_items(url: str, page: int, search: str | None = None, sort_by: str | N
     except JSONDecodeError as e:
         console.print(f"[bold red]Error decoding JSON from response:[/bold red] {repr(e)}")
 
+    return items
+
 
 @app.command()
 @with_spinner
@@ -44,20 +52,14 @@ def list_people(
     search: Annotated[str | None, typer.Option(help="Partial name to filter results by. Case-insensitive.")] = None,
     sort_by: Annotated[str | None, typer.Option(help="Sort the results by the given field.")] = None,
 ) -> None:
-    """
-    CLI command that fetches people from the SWAPI API and displays the result as a table.
-
-    Args:
-        page: Page number to fetch. Each page returns a fixed number of people.
-        search: Optional search query to filter people by name (case-insensitive).
-        sort_by: Optional field to sort the retrieved.
-    """
-    _list_items(
+    """CLI command that fetches people from the SWAPI API and displays the result as a table."""
+    items: list[dict[str, Any]] = _get_items(
         url=f"{app_config.url}/{resource_config.people_resource}/",
         page=page,
         search=search,
         sort_by=sort_by,
     )
+    display_table(items=items)
 
 
 @app.command()
@@ -67,20 +69,14 @@ def list_planets(
     search: Annotated[str | None, typer.Option(help="Partial name to filter results by. Case-insensitive.")] = None,
     sort_by: Annotated[str | None, typer.Option(help="Sort the results by the given field.")] = None,
 ) -> None:
-    """
-    CLI command that fetches planets from the SWAPI API and displays the result as a table.
-
-    Args:
-        page: Page number to fetch. Each page returns a fixed number of people.
-        search: Optional search query to filter people by name (case-insensitive).
-        sort_by: Optional field to sort the retrieved.
-    """
-    _list_items(
+    """CLI command that fetches planets from the SWAPI API and displays the result as a table."""
+    items: list[dict[str, Any]] = _get_items(
         url=f"{app_config.url}/{resource_config.planets_resource}/",
         page=page,
         search=search,
         sort_by=sort_by,
     )
+    display_table(items=items)
 
 
 if __name__ == "__main__":
