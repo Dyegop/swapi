@@ -16,7 +16,7 @@ app.include_router(ai_insights_router, prefix=app_config.ai_insights_path, tags=
 
 if __name__ == "__main__":
     uvicorn.run(
-        "main:app",
+        "src.app.app:app",
         host=app_config.host,
         port=app_config.port,
         reload=app_config.reload,
