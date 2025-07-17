@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query
 
 from src.app.models import Person
 from src.app.services import list_items
-from src.core import get_resource_config
+from src.core import Tags, get_resource_config
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ class PersonSortingField(StrEnum):
     EDITED = "edited"
 
 
-@router.get("/", response_model=list[Person], tags=[resource_config.people_resource])
+@router.get("/", response_model=list[Person], tags=[Tags.PEOPLE])
 async def list_people(
     page: Annotated[int, Query(ge=1)] = 1,
     search: str | None = None,
