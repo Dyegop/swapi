@@ -3,8 +3,8 @@ import pydantic
 from src.app.models.base_model import model_field
 
 
-class AIDescription(pydantic.BaseModel):
-    """Describes a generated AI description entity."""
+class Insight(pydantic.BaseModel):
+    """Describes a generated AI insight entity."""
 
     name: str = model_field(
         title="Name",

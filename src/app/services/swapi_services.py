@@ -1,6 +1,6 @@
 import asyncio
 import re
-from typing import Coroutine, Type, TypeVar
+from typing import Coroutine, Literal, Type, TypeVar
 
 import httpx
 import pydantic
@@ -75,3 +75,16 @@ async def list_items(
         items: list[SwapiModel] = sorted(items, key=lambda item: getattr(item, sort_by))
 
     return items
+
+
+async def generate_description(resource_type: Literal["person", "planet"], name: str) -> str:
+    """Returns a mock description."""
+
+    mock_description: str = "I am a mock description."
+
+    if resource_type == "person":
+        mock_description = f"{name.capitalize()}, may the force be with you."
+    if resource_type == "planet":
+        mock_description = f"I want to live in {name.capitalize()}."
+
+    return mock_description

@@ -1,1 +1,1 @@
-from src.app.services.swapi_services import list_items
+from src.app.services.swapi_services import generate_description, list_items
