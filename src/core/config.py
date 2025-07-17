@@ -12,6 +12,7 @@ class AppConfig(pydantic_settings.BaseSettings):
     reload: bool = False
     people_path: str = "/people"
     planets_path: str = "/planets"
+    ai_insights_path: str = "/simulate_ai_insight"
 
     @property
     def url(self) -> str:
@@ -27,13 +28,11 @@ class AppConfig(pydantic_settings.BaseSettings):
 
 
 class ResourceConfig(pydantic_settings.BaseSettings):
-    """Describes SWAPI resource configuration."""
+    """Describes resources configuration."""
 
-    people_resource: str = "people"
-    planets_resource: str = "planets"
-    base_url: str = "https://swapi.info/api/"
-    people_endpoint: str = f"{base_url}/{people_resource}"
-    planets_endpoint: str = f"{base_url}/{planets_resource}"
+    swapi_base_url: str = "https://swapi.info/api/"
+    people_endpoint: str = f"{swapi_base_url}/people"
+    planets_endpoint: str = f"{swapi_base_url}/planets"
 
     default_page_size: int = 10
     """Default items to return by page."""
