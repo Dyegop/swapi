@@ -34,6 +34,11 @@ class AppConfig(BaseConfig):
         description="The port number the application will bind to.",
     )
 
+    exposed_port: int = model_field(
+        title="Exposed Port",
+        description="The port number the application exposes for incoming connections.",
+    )
+
     reload: bool = model_field(
         default=False,
         title="Reload",
@@ -54,15 +59,15 @@ class AppConfig(BaseConfig):
 
     @property
     def url(self) -> str:
-        return f"http://{self.host}:{self.port}"
+        return f"http://{self.name}:{self.port}"
 
     @property
     def people_url(self) -> str:
-        return f"http://{self.host}:{self.port}{self.people_path}/"
+        return f"{self.url}{self.people_path}/"
 
     @property
     def planets_url(self) -> str:
-        return f"http://{self.host}:{self.port}{self.planets_path}/"
+        return f"{self.url}{self.planets_path}/"
 
 
 class ResourceConfig(BaseConfig):
