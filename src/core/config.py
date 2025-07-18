@@ -12,26 +12,22 @@ class AppConfig(pydantic_settings.BaseSettings):
     name: str = model_field(
         title="Name",
         description="The name of the application.",
-        validation_alias="APP_NAME",
     )
 
     host: str = model_field(
         title="Host",
         description="The hostname or IP address where the app will run.",
-        validation_alias="APP_HOST",
     )
 
     port: int = model_field(
         title="Port",
         description="The port number the application will bind to.",
-        validation_alias="APP_PORT",
     )
 
     reload: bool = model_field(
         default=False,
         title="Reload",
         description="True for auto-reload, False otherwise.",
-        validation_alias="RELOAD_APP",
     )
     people_path: str = model_field(
         title="People Path",
@@ -62,18 +58,25 @@ class AppConfig(pydantic_settings.BaseSettings):
 class ResourceConfig(pydantic_settings.BaseSettings):
     """Describes resources configuration."""
 
-    swapi_base_url: str = model_field(title="SWAPI Base URL", description="The base URL for the Star Wars API.")
+    swapi_base_url: str = model_field(
+        title="SWAPI Base URL",
+        description="The base URL for the Star Wars API.",
+    )
 
     people_endpoint: str = model_field(
-        title="People Endpoint", description="The endpoint path for accessing people data."
+        title="People Endpoint",
+        description="The endpoint path for accessing people data.",
     )
 
     planets_endpoint: str = model_field(
-        title="Planets Endpoint", description="The endpoint path for accessing planets data."
+        title="Planets Endpoint",
+        description="The endpoint path for accessing planets data.",
     )
 
     default_page_size: int = model_field(
-        ge=1, title="Default Page Size", description="The default number of items per page (minimum 1)."
+        ge=1,
+        title="Default Page Size",
+        description="The default number of items per page (minimum 1).",
     )
 
 

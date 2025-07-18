@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # App Metadata
-export APP_NAME="swapi"
-export APP_HOST="127.0.0.1"
-export APP_PORT=8000
-export RELOAD_APP=true
+export NAME="swapi"
+export HOST="0.0.0.0"
+export PORT=8000
+export RELOAD=true
 
 # App Endpoints
 export PEOPLE_PATH="/people"
