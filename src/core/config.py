@@ -6,7 +6,17 @@ import pydantic_settings
 model_field = pydantic.Field
 
 
-class AppConfig(pydantic_settings.BaseSettings):
+class BaseConfig(pydantic_settings.BaseSettings):
+    """Base Config for all configurations."""
+
+    model_config = pydantic_settings.SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="allow",
+    )
+
+
+class AppConfig(BaseConfig):
     """Describes app configuration."""
 
     name: str = model_field(
@@ -55,7 +65,7 @@ class AppConfig(pydantic_settings.BaseSettings):
         return f"http://{self.host}:{self.port}{self.planets_path}/"
 
 
-class ResourceConfig(pydantic_settings.BaseSettings):
+class ResourceConfig(BaseConfig):
     """Describes resources configuration."""
 
     swapi_base_url: str = model_field(
