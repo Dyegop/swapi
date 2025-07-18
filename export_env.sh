@@ -4,6 +4,7 @@
 export NAME="swapi"
 export HOST="0.0.0.0"
 export PORT=8000
+export EXPOSED_PORT=6969
 export RELOAD=true
 
 # App Endpoints
