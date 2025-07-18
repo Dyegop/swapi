@@ -1,16 +1,23 @@
+from enum import StrEnum
 from json import JSONDecodeError
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any
 
 import httpx
 import typer
 
 from src.cli.console import console, display_table, with_spinner
-from src.core import get_app_config, get_resource_config
+from src.core import get_app_config
 
 app_config = get_app_config()
-resource_config = get_resource_config()
 
 app = typer.Typer()
+
+
+class OrderChoice(StrEnum):
+    """Describes order choices for commands."""
+
+    ASC = "asc"
+    DESC = "desac"
 
 
 def _get_items(url: str, page: int, search: str | None, sort_by: str | None, order: str | None) -> list[dict[str, Any]]:
@@ -58,13 +65,16 @@ def list_people(
     search: Annotated[str | None, typer.Option(help="Partial name to filter results by. Case-insensitive.")] = None,
     sort_by: Annotated[str | None, typer.Option(help="Sort the results by the given field.")] = None,
     order: Annotated[
-        Literal["asc", "desc"] | None,
-        typer.Option(help="Items order if sort_by: 'asc' for ascending, 'desc' for descending. Defaults to 'asc'"),
-    ] = None,
+        OrderChoice,
+        typer.Option(
+            help="Items order if sort_by: 'asc' for ascending, 'desc' for descending. Defaults to 'asc'",
+            case_sensitive=False,
+        ),
+    ] = OrderChoice.ASC,
 ) -> None:
     """CLI command that fetches people from the SWAPI API and displays the result as a table."""
     items: list[dict[str, Any]] = _get_items(
-        url=f"{app_config.url}/{resource_config.people_resource}/",
+        url=app_config.people_url,
         page=page,
         search=search,
         sort_by=sort_by,
@@ -80,13 +90,16 @@ def list_planets(
     search: Annotated[str | None, typer.Option(help="Partial name to filter results by. Case-insensitive.")] = None,
     sort_by: Annotated[str | None, typer.Option(help="Sort the results by the given field.")] = None,
     order: Annotated[
-        Literal["asc", "desc"] | None,
-        typer.Option(help="Items order if sort_by: 'asc' for ascending, 'desc' for descending. Defaults to 'asc'"),
-    ] = None,
+        OrderChoice,
+        typer.Option(
+            help="Items order if sort_by: 'asc' for ascending, 'desc' for descending. Defaults to 'asc'",
+            case_sensitive=False,
+        ),
+    ] = OrderChoice.ASC,
 ) -> None:
     """CLI command that fetches planets from the SWAPI API and displays the result as a table."""
     items: list[dict[str, Any]] = _get_items(
-        url=f"{app_config.url}/{resource_config.planets_resource}/",
+        url=app_config.planets_url,
         page=page,
         search=search,
         sort_by=sort_by,
