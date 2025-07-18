@@ -1,0 +1,33 @@
+name: "${NAME}"
+services:
+  swapi-app:
+    build: .
+    env_file:
+      - .env
+    restart: unless-stopped
+    command: >
+      sh -c '
+      if [ "$RELOAD" = "true" ]; then
+        uvicorn src.app.app:app --host $HOST --port $PORT --reload;
+      else
+        uvicorn src.app.app:app --host $HOST --port $PORT;
+      fi
+      '
+    volumes:
+      - ./src/app:/app/src/app
+      - ./src/core:/app/src/core
+    ports:
+      - "{EXPOSED_PORT}:${PORT}"
+
+  swapi-cli:
+    depends_on:
+      - swapi-app
+    build: .
+    env_file:
+      - .env
+    working_dir: /app
+    volumes:
+      - ./src/cli:/app/src/cli
+      - ./src/core:/app/src/core
+    entrypoint: ["python", "-m", "src.cli.swapi_cli"]
+    command: ["list-people"]
