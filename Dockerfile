@@ -6,7 +6,7 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
 
-COPY app-requirements ./requirements
+COPY requirements ./requirements
 RUN pip install --upgrade pip
 RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements
 
